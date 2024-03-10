@@ -1,16 +1,28 @@
+import os
 from src.classes.record import Record
 from src.classes.addressBook import AddressBook
 from src.tools.handlers import add_birthday, add_contact, birthdays, change_contact, parse_input, phone, print_contacts, show_birthday
-
+import pickle
 
 def bot():
-    book = AddressBook()
+    book = None
+    book_from_file = None
+    if os.path.isfile('book.bin'):
+        with open('book.bin', 'rb') as file:
+            book_from_file = pickle.load(file)
+    print(str(book_from_file))
     print("Welcome to the assistant bot!")
+    if book_from_file:
+        book = book_from_file
+    else:
+        book = AddressBook()
     while True:
         user_input = input("Enter a command: ")
         command, *args = parse_input(user_input)
 
         if command in ["close", "exit"]:
+            with open('book.bin', 'wb') as file:
+                pickle.dump(book, file)
             print("Good bye!")
             break
         elif command == "hello":
